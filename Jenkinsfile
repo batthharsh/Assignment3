@@ -9,31 +9,31 @@ pipeline {
     stage('Cloning Git') {
       steps {
         git([url: 'https://github.com/batthharsh/Assignment3.git', branch: 'main'])
- 
       }
     }
     stage('Building image') {
-      steps{
+      steps {
         script {
           dockerImage = docker.build imagename
         }
-      }\\\\\\\\\\
+      }
     }
     stage('Deploy Image') {
-      steps{
+      steps {
         script {
-          docker.withRegistry( '', registryCredential ) {
+          docker.withRegistry('', registryCredential) {
             dockerImage.push("$BUILD_NUMBER")
-             dockerImage.push('latest')
+            dockerImage.push('latest')
           }
         }
       }
     }
     stage('Remove Unused docker image') {
-      steps{
-        sh "docker rmi $imagename:$BUILD_NUMBER"
-         sh "docker rmi $imagename:latest"
- 
+      steps {
+        script {
+          sh "docker rmi ${imagename}:${BUILD_NUMBER}"
+          sh "docker rmi ${imagename}:latest"
+        }
       }
     }
   }
